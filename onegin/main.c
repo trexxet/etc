@@ -3,20 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <wctype.h>
 #include <assert.h>
 #include <errno.h>
 
 #include "onegin.h"
+
+
+static int cmpAlphabet (const void* p1, const void* p2, void* saveptr);
+
 
 #define ONEG_FAIL() {                           \
 	perror (oneg_strerr (O -> oneg_errno)); \
 	oneg_free (O);                          \
 	return errno;                           \
 }
-
-
-static int cmpAlphabet (const void* p1, const void* p2, void* saveptr);
-
 
 int main (int argc, char** argv) {
 
@@ -57,16 +58,19 @@ int main (int argc, char** argv) {
 	return EXIT_SUCCESS;
 }
 
+#undef ONEG_FAIL
+
 
 static int cmpAlphabet (const void* p1, const void* p2, void* saveptr) {
-	#define _ptr1 (*(wchar_t**) p1)
-	#define _ptr2 (*(wchar_t**) p2)
+	wchar_t* ptr1 = *(wchar_t**) p1;
+	wchar_t* ptr2 = *(wchar_t**) p2;
+	wint_t i1 = 0, i2 = 0;
 
-	return wcscasecmp(_ptr1, _ptr2);
+	while (!iswalpha(ptr1[i1]) && (ptr1[i1] != L'\0'))
+		i1++;
+	while (!iswalpha(ptr2[i2]) && (ptr2[i2] != L'\0'))
+		i2++;
 
-	#undef _ptr1
-	#undef _ptr2
+	return wcscasecmp(&ptr1[i1], &ptr2[i2]);
 }
-
-#undef ONEG_FAIL
 
