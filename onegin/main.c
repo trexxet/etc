@@ -10,7 +10,9 @@
 #include "onegin.h"
 
 
-static int cmpAlphabet (const void* p1, const void* p2, void* saveptr);
+/*==================================================================================*/
+static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr);
+/*==================================================================================*/
 
 
 #define ONEG_FAIL() {                           \
@@ -49,11 +51,12 @@ int main (int argc, char** argv) {
 
 	// Sort and write to file
 	
-	oneg_sortLines (O, cmpAlphabet);
+	oneg_sortLines (O, cmpAlphabetic);
 	if (oneg_writeSorted (O, argv[2]) != 0) 
 		ONEG_FAIL ();
 
 	// Finish
+
 	oneg_free (O);
 	return EXIT_SUCCESS;
 }
@@ -61,7 +64,10 @@ int main (int argc, char** argv) {
 #undef ONEG_FAIL
 
 
-static int cmpAlphabet (const void* p1, const void* p2, void* saveptr) {
+/*
+ * Comparator for sorting lines in alphabetic order
+ */
+static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
 	wchar_t* ptr1 = *(wchar_t**) p1;
 	wchar_t* ptr2 = *(wchar_t**) p2;
 	wint_t i1 = 0, i2 = 0;

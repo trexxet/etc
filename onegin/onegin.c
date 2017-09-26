@@ -3,11 +3,10 @@
  *
  *       Filename:  onegin.c
  *
- *    Description:  Text lines sorter source file
+ *    Description:  Text file sorter source file
  *
  *        Version:  1.0
  *        Created:  08/27/2017 07:53:38 PM
- *       Revision:  none
  *       Compiler:  gcc
  *
  *         Author:  trexxet
@@ -28,6 +27,14 @@
 
 #define return_oneg_errno(_err_) return (state -> oneg_errno = _err_)
 
+
+/*==================================================================================*/
+
+
+/*
+ * Create onegin state
+ * Returns pointer on created onegin state
+ */
 oneg_State* oneg_init () {
 
 	oneg_State* state = (oneg_State*) calloc (1, sizeof (oneg_State));
@@ -48,6 +55,10 @@ oneg_State* oneg_init () {
 }
 
 
+/* 
+ * Load text from a source file $filename to $state buffer and convert it into wbuffer
+ * Returns ONEG_ERRNO of $state
+ */
 int oneg_loadSource (oneg_State* state, const char* fileName) {
 
 	assert (state);
@@ -103,6 +114,10 @@ int oneg_loadSource (oneg_State* state, const char* fileName) {
 }
 
 
+/* 
+ * Split $state wbuffer into lines
+ * Returns ONEG_ERRNO of $state
+ */
 int oneg_splitSource (oneg_State* state) {
 
 	assert (state);
@@ -134,6 +149,12 @@ int oneg_splitSource (oneg_State* state) {
 }
 
 
+/*
+ * Sort $state lines according to a comparsion function pointed by $compar
+ * The comparsion function must return an integer less than, equal to or greater than zero
+ * if the first argument is considered to be respectively less than, equal to or greater
+ * than the second
+ */
 void oneg_sortLines (oneg_State* state, int (*compar)(const void*, const void*, void*)) {
 
 	assert (state);
@@ -144,6 +165,10 @@ void oneg_sortLines (oneg_State* state, int (*compar)(const void*, const void*, 
 }
 
 
+/*
+ * Write $state wbuffer according to $state lines pointer to output file $filename
+ * Returns ONEG_ERRNO of $state
+ */
 int oneg_writeSorted (oneg_State* state, const char* fileName) {
 
 	assert (state);
@@ -174,6 +199,12 @@ int oneg_writeSorted (oneg_State* state, const char* fileName) {
 }
 
 
+#undef return_oneg_errno
+
+
+/* 
+ * Free memory used by $state and destroy it
+ */
 void oneg_free (oneg_State* state) {
 	
 	assert (state);
@@ -189,6 +220,4 @@ void oneg_free (oneg_State* state) {
 	free (state);
 	state = NULL;
 }
-
-#undef return_oneg_errno
 
