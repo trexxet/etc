@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -std=c11
+CFLAGS = -g -Wall -std=c11
 SRC = main.c onegin.c
 BIN = onegin
 

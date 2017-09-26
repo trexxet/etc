@@ -19,18 +19,20 @@
 
 
 enum {
-	NO_ERROR = 0,
-	SOURCE_FILE_ACCESS,
-	SOURCE_FILE_OPEN,
-	SOURCE_FILE_BUFFER,
-	SOURCE_FILE_READ,
-	SPLITTED_LINES_BUFFER,
-	DEST_FILE_OPEN,
-	DEST_FILE_WRITE
+	EONEG_NO_ERROR = 0,
+	EONEG_SET_LOCALE,
+	EONEG_SOURCE_FILE_ACCESS,
+	EONEG_SOURCE_FILE_OPEN,
+	EONEG_SOURCE_FILE_BUFFER,
+	EONEG_SOURCE_FILE_READ,
+	EONEG_SPLITTED_LINES_BUFFER,
+	EONEG_DEST_FILE_OPEN,
+	EONEG_DEST_FILE_WRITE
 };
 
-static const char * const oneg_strerrlist[] = { 
+static const char* const oneg_strerrlist[] = {
 	"No error",
+	"Warning: can't set locale, output may be corrupted",
         "Can't access source file",
         "Can't open source file",
         "Can't create buffer for source file",
@@ -44,9 +46,12 @@ static const char * const oneg_strerrlist[] = {
 
 typedef struct {
 	char* buffer;
+	wchar_t* wbuffer;
 	size_t bufferSize;
-	char** lines;
+
+	wchar_t** lines;
 	size_t numOfLines;
+
 	int oneg_errno;
 } oneg_State;
 

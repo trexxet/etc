@@ -1,6 +1,8 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <wchar.h>
 #include <assert.h>
 #include <errno.h>
 
@@ -14,6 +16,7 @@
 
 
 static int cmpAlphabet (const void* p1, const void* p2, void* saveptr);
+
 
 int main (int argc, char** argv) {
 
@@ -29,6 +32,9 @@ int main (int argc, char** argv) {
 		perror ("Onegin initialization");
 		return errno;
 	}
+
+	if (O -> oneg_errno == EONEG_SET_LOCALE)
+		fprintf (stderr, "%s\n", oneg_strerr (EONEG_SET_LOCALE));
 
 	// Load source file
 	
@@ -53,10 +59,13 @@ int main (int argc, char** argv) {
 
 
 static int cmpAlphabet (const void* p1, const void* p2, void* saveptr) {
-	assert (p1);
-	assert (p2);
+	#define _ptr1 (*(wchar_t**) p1)
+	#define _ptr2 (*(wchar_t**) p2)
 
-	return strcasecmp(*(char**) p1, *(char**) p2);
+	return wcscasecmp(_ptr1, _ptr2);
+
+	#undef _ptr1
+	#undef _ptr2
 }
 
 #undef ONEG_FAIL
