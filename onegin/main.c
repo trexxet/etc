@@ -65,7 +65,7 @@ int main (int argc, char** argv) {
 
 
 /*
- * Comparator for sorting lines in alphabetic order
+ * Comparator for sorting lines in alphabetic order exluding non-alpha characters
  */
 static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
 	wchar_t* ptr1 = *(wchar_t**) p1;
