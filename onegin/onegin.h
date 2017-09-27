@@ -61,8 +61,7 @@ static const char* const oneg_strerrlist[] = {
  * Onegin state structure
  */
 typedef struct {
-	char* buffer;        // Buffer for data from source file
-	wchar_t* wbuffer;    // Main data buffer
+	wchar_t* buffer;    // Main data buffer
 	size_t bufferSize;   // Size of buffers
 
 	wchar_t** lines;     // Pointers on lines in wbuffer
@@ -82,12 +81,12 @@ typedef struct {
  */
 oneg_State* oneg_init ();
 /* 
- * Load text from a source file $filename to $state buffer and convert it into wbuffer
+ * Load text from a source file $filename to $state buffer
  * Returns ONEG_ERRNO of $state
  */
 int oneg_loadSource (oneg_State* state, const char* fileName);
 /* 
- * Split $state wbuffer into lines
+ * Split $state buffer into lines
  * Returns ONEG_ERRNO of $state
  */
 int oneg_splitSource (oneg_State* state);
@@ -99,7 +98,7 @@ int oneg_splitSource (oneg_State* state);
  */
 void oneg_sortLines (oneg_State *state, int (*compar) (const void*, const void*, void*));
 /*
- * Write $state wbuffer according to $state lines pointer to output file $filename
+ * Write $state buffer according to $state lines pointer to output file $filename
  * Returns ONEG_ERRNO of $state
  */
 int oneg_writeSorted (oneg_State* state, const char* fileName);

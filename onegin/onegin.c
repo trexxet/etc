@@ -42,7 +42,6 @@ oneg_State* oneg_init () {
 		return NULL;
 
 	state -> buffer = NULL;
-	state -> wbuffer = NULL;
 	state -> bufferSize = 0;
 	state -> lines = NULL;
 	state -> numOfLines = 0;
@@ -56,7 +55,7 @@ oneg_State* oneg_init () {
 
 
 /* 
- * Load text from a source file $filename to $state buffer and convert it into wbuffer
+ * Load text from a source file $filename to $state buffer
  * Returns ONEG_ERRNO of $state
  */
 int oneg_loadSource (oneg_State* state, const char* fileName) {
@@ -81,41 +80,42 @@ int oneg_loadSource (oneg_State* state, const char* fileName) {
 
 	// Load file to buffer
 
-	state -> buffer = (char*) calloc (state -> bufferSize + 1, 1);
-	if (!state -> buffer) {
+	// Buffer for data from source file
+	char* sbuffer = (char*) calloc (state -> bufferSize + 1, 1);
+	if (!sbuffer) {
 		fclose (source);
 		return_oneg_errno (EONEG_SOURCE_FILE_BUFFER);
 	}
 
-	if ((fread (state -> buffer, 1, state -> bufferSize, source) < (state -> bufferSize))
+	if ((fread (sbuffer, 1, state -> bufferSize, source) < (state -> bufferSize))
 	  || ferror (source)) {
 		fclose (source);
 		return_oneg_errno (EONEG_SOURCE_FILE_READ);
 	}
 
-	// Convert buffer to wchar_t*
+	// Convert source buffer to wchar_t*
 
-	state -> buffer[state -> bufferSize] = 0;
-	state -> wbuffer = (wchar_t*) calloc (state -> bufferSize, sizeof(wchar_t));
-	if (!state -> wbuffer) {
-		free (state -> buffer);
-		state -> buffer = NULL;
+	sbuffer[state -> bufferSize] = 0;
+	state -> buffer = (wchar_t*) calloc (state -> bufferSize, sizeof(wchar_t));
+	if (!state -> buffer) {
+		free (sbuffer);
+		sbuffer = NULL;
 		fclose (source);
 		return_oneg_errno (EONEG_SOURCE_FILE_BUFFER);
 	}
-	mbstowcs (state -> wbuffer, state -> buffer, state -> bufferSize);
+	mbstowcs (state -> buffer, sbuffer, state -> bufferSize);
 
 	// Finish
 
-	free (state -> buffer);
-	state -> buffer = NULL;
+	free (sbuffer);
+	sbuffer = NULL;
 	fclose (source);
 	return_oneg_errno (EONEG_NO_ERROR);
 }
 
 
 /* 
- * Split $state wbuffer into lines
+ * Split $state buffer into lines
  * Returns ONEG_ERRNO of $state
  */
 int oneg_splitSource (oneg_State* state) {
@@ -126,7 +126,7 @@ int oneg_splitSource (oneg_State* state) {
 
 	state -> numOfLines = 0;
 	for (size_t i = 0; i < state -> bufferSize; i++)
-		if (state -> wbuffer[i] == L'\n')
+		if (state -> buffer[i] == L'\n')
 			state -> numOfLines++;
 
 	// Split source to lines
@@ -137,7 +137,7 @@ int oneg_splitSource (oneg_State* state) {
 
 	wchar_t* saveptr = NULL;
 	wchar_t* line = NULL;
-	wchar_t* tokptr = (state -> wbuffer);
+	wchar_t* tokptr = state -> buffer;
 	for (size_t j = 0; ; j++, tokptr = NULL)
 	{
 		line = wcstok (tokptr, L"\n", &saveptr);
@@ -168,7 +168,7 @@ void oneg_sortLines (oneg_State* state, int (*compar)(const void*, const void*, 
 
 
 /*
- * Write $state wbuffer according to $state lines pointer to output file $filename
+ * Write $state buffer according to $state lines pointer to output file $filename
  * Returns ONEG_ERRNO of $state
  */
 int oneg_writeSorted (oneg_State* state, const char* fileName) {
@@ -211,9 +211,9 @@ void oneg_free (oneg_State* state) {
 	
 	assert (state);
 
-	if (state -> wbuffer) {
-		free (state -> wbuffer);
-		state -> wbuffer = NULL;
+	if (state -> buffer) {
+		free (state -> buffer);
+		state -> buffer = NULL;
 	}
 	if (state -> lines) {
 		free (state -> lines);
