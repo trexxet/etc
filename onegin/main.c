@@ -12,6 +12,7 @@
 
 /*==================================================================================*/
 static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr);
+static int cmpReverseAlphabetic (const void* p1, const void* p2, void* saveptr);
 /*==================================================================================*/
 
 
@@ -27,9 +28,9 @@ int main (int argc, char** argv) {
 		fprintf (stderr, "Usage: onegin <source file> <destination file>\n");
 		return EXIT_FAILURE;
 	}
-	
+
 	// Create state
-	
+
 	oneg_State* O = oneg_init();
 	if (!O) {
 		perror ("Onegin initialization");
@@ -43,14 +44,14 @@ int main (int argc, char** argv) {
 	
 	if (oneg_loadSource (O, argv[1]) != 0)
 		ONEG_FAIL ();
-	
+
 	// Split file to lines
-	
+
 	if (oneg_splitSource(O) != 0)
 		ONEG_FAIL ();
 
 	// Sort and write to file
-	
+
 	oneg_sortLines (O, cmpAlphabetic);
 	if (oneg_writeSorted (O, argv[2]) != 0) 
 		ONEG_FAIL ();
@@ -68,8 +69,8 @@ int main (int argc, char** argv) {
  * Comparator for sorting lines in alphabetic order exluding non-alpha characters
  */
 static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
-	wchar_t* ptr1 = *(wchar_t**) p1;
-	wchar_t* ptr2 = *(wchar_t**) p2;
+	wchar_t* ptr1 = ((oneg_String*) p1) -> string;
+	wchar_t* ptr2 = ((oneg_String*) p2) -> string;
 	wint_t i1 = 0, i2 = 0;
 
 	while (!iswalpha(ptr1[i1]) && (ptr1[i1] != L'\0'))
@@ -78,5 +79,16 @@ static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
 		i2++;
 
 	return wcscasecmp(&ptr1[i1], &ptr2[i2]);
+}
+
+
+/*
+ * Comparator for sorting reversed lines in alphabetic order excluding non-alpha characters
+ */
+static int cmpReverseAlphabetic (const void* p1, const void* p2, void* saveptr) {
+	wchar_t* ptr1 = *(wchar_t**) p1;
+	wchar_t* ptr2 = *(wchar_t**) p2;
+
+	return 0;
 }
 

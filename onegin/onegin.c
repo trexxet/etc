@@ -131,7 +131,7 @@ int oneg_splitSource (oneg_State* state) {
 
 	// Split source to lines
 
-	state -> lines = (wchar_t**) calloc (state -> numOfLines, sizeof(wchar_t*));
+	state -> lines = (oneg_String*) calloc (state -> numOfLines, sizeof(oneg_String));
 	if (!state -> lines)
 		return_oneg_errno (EONEG_SPLITTED_LINES_BUFFER);
 
@@ -142,7 +142,7 @@ int oneg_splitSource (oneg_State* state) {
 	{
 		line = wcstok (tokptr, L"\n", &saveptr);
 		if (line)
-			state -> lines[j] = line;
+			state -> lines[j].string = line;
 		else
 			break;
 	}
@@ -163,7 +163,7 @@ void oneg_sortLines (oneg_State* state, int (*compar)(const void*, const void*, 
 	assert (compar);
 
 	void* saveptr = NULL;
-	qsort_r (state -> lines, state -> numOfLines, sizeof(wchar_t*), compar, saveptr);
+	qsort_r (state -> lines, state -> numOfLines, sizeof(oneg_String), compar, saveptr);
 }
 
 
@@ -176,8 +176,6 @@ int oneg_writeSorted (oneg_State* state, const char* fileName) {
 	assert (state);
 	assert (fileName);
 	
-	size_t numOfWrittenLines = 0;
-
 	// Open file
 	
 	FILE* dest = fopen (fileName, "w"); 
@@ -186,8 +184,9 @@ int oneg_writeSorted (oneg_State* state, const char* fileName) {
 
 	// Write buffer to file according to sorted lines
 	
+	size_t numOfWrittenLines = 0;
 	for (size_t i = 0; i < state -> numOfLines; i++) {
-		if (fwprintf (dest, L"%ls\n", state -> lines[i]) > 0)
+		if (fwprintf (dest, L"%ls\n", state -> lines[i].string) > 0)
 			numOfWrittenLines++;
 		else
 			break;

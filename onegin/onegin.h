@@ -58,18 +58,26 @@ static const char* const oneg_strerrlist[] = {
 
 
 /*
- * Onegin state structure
+ * Onegin string struct
  */
 typedef struct {
-	wchar_t* buffer;    // Main data buffer
-	size_t bufferSize;   // Size of buffers
+	wchar_t* string;     // Literally string
+	size_t length;       // Length of string
+} oneg_String;
 
-	wchar_t** lines;     // Pointers on lines in wbuffer
+
+/*
+ * Onegin state struct
+ */
+typedef struct {
+	wchar_t* buffer;     // Main data buffer
+	size_t bufferSize;   // Size of buffer
+
+	oneg_String* lines;  // Lines in buffer to be sorted
 	size_t numOfLines;   // Number of lines
 
 	int oneg_errno;      // ONEG_ERRNO of state
 } oneg_State;
-
 
 
 /*==================================================================================*/
