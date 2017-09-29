@@ -135,16 +135,12 @@ int oneg_splitSource (oneg_State* state) {
 	if (!state -> lines)
 		return_oneg_errno (EONEG_SPLITTED_LINES_BUFFER);
 
-	wchar_t* saveptr = NULL;
 	wchar_t* line = NULL;
 	wchar_t* tokptr = state -> buffer;
-	for (size_t j = 0; ; j++, tokptr = NULL)
-	{
-		line = wcstok (tokptr, L"\n", &saveptr);
-		if (line)
-			state -> lines[j].string = line;
-		else
-			break;
+	size_t i = 0;
+	while ((line = wcstok (tokptr, L"\n", &tokptr))) {
+		state -> lines[i].string = line;
+		state -> lines[i++].length = wcslen (line);
 	}
 
 	return_oneg_errno (EONEG_NO_ERROR);

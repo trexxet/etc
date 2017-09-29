@@ -52,7 +52,8 @@ int main (int argc, char** argv) {
 
 	// Sort and write to file
 
-	oneg_sortLines (O, cmpAlphabetic);
+	//oneg_sortLines (O, cmpAlphabetic);
+	oneg_sortLines (O, cmpReverseAlphabetic);
 	if (oneg_writeSorted (O, argv[2]) != 0) 
 		ONEG_FAIL ();
 
@@ -69,16 +70,16 @@ int main (int argc, char** argv) {
  * Comparator for sorting lines in alphabetic order exluding non-alpha characters
  */
 static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
-	wchar_t* ptr1 = ((oneg_String*) p1) -> string;
-	wchar_t* ptr2 = ((oneg_String*) p2) -> string;
+	wchar_t* str1 = ((oneg_String*) p1) -> string;
+	wchar_t* str2 = ((oneg_String*) p2) -> string;
 	wint_t i1 = 0, i2 = 0;
 
-	while (!iswalpha(ptr1[i1]) && (ptr1[i1] != L'\0'))
+	while (!iswalpha(str1[i1]) && (str1[i1] != L'\0'))
 		i1++;
-	while (!iswalpha(ptr2[i2]) && (ptr2[i2] != L'\0'))
+	while (!iswalpha(str2[i2]) && (str2[i2] != L'\0'))
 		i2++;
 
-	return wcscasecmp(&ptr1[i1], &ptr2[i2]);
+	return wcscasecmp(&str1[i1], &str2[i2]);
 }
 
 
@@ -86,9 +87,21 @@ static int cmpAlphabetic (const void* p1, const void* p2, void* saveptr) {
  * Comparator for sorting reversed lines in alphabetic order excluding non-alpha characters
  */
 static int cmpReverseAlphabetic (const void* p1, const void* p2, void* saveptr) {
-	wchar_t* ptr1 = *(wchar_t**) p1;
-	wchar_t* ptr2 = *(wchar_t**) p2;
+	oneg_String* oStr1 = (oneg_String*) p1;
+	oneg_String* oStr2 = (oneg_String*) p2;
+	wint_t i1 = oStr1 -> length - 1, i2 = oStr2 -> length - 1;
+	wchar_t* str1 = oStr1 -> string;
+	wchar_t* str2 = oStr2 -> string;
 
-	return 0;
+	while (!iswalpha(str1[i1]) && (i1 > 0))
+		i1--;
+	while (!iswalpha(str2[i2]) && (i2 > 0))
+		i2--;
+	while ((i1 > 0) && (i2 > 0) && (str1[i1] == str2[i2])) {
+		i1--;
+		i2--;
+	}
+
+	return str1[i1] - str2[i2];
 }
 
