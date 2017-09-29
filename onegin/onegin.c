@@ -206,14 +206,12 @@ void oneg_free (oneg_State* state) {
 	
 	assert (state);
 
-	if (state -> buffer) {
-		free (state -> buffer);
-		state -> buffer = NULL;
-	}
-	if (state -> lines) {
-		free (state -> lines);
-		state -> lines = NULL;
-	}
+	free (state -> buffer);
+	state -> buffer = NULL;
+
+	free (state -> lines);
+	state -> lines = NULL;
+	
 	free (state);
 	state = NULL;
 }

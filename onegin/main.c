@@ -24,8 +24,8 @@ static int cmpReverseAlphabetic (const void* p1, const void* p2, void* saveptr);
 
 int main (int argc, char** argv) {
 
-	if (argc != 3) {
-		fprintf (stderr, "Usage: onegin <source file> <destination file>\n");
+	if (argc != 4 || (argv[1][0] != 's' && argv[1][0] != 'r')) {
+		fprintf (stderr, "Usage: onegin <s/r> <source file> <destination file>\n");
 		return EXIT_FAILURE;
 	}
 
@@ -42,7 +42,7 @@ int main (int argc, char** argv) {
 
 	// Load source file
 	
-	if (oneg_loadSource (O, argv[1]) != 0)
+	if (oneg_loadSource (O, argv[2]) != 0)
 		ONEG_FAIL ();
 
 	// Split file to lines
@@ -52,9 +52,8 @@ int main (int argc, char** argv) {
 
 	// Sort and write to file
 
-	//oneg_sortLines (O, cmpAlphabetic);
-	oneg_sortLines (O, cmpReverseAlphabetic);
-	if (oneg_writeSorted (O, argv[2]) != 0) 
+	oneg_sortLines (O, argv[1][0] == 's' ? cmpAlphabetic : cmpReverseAlphabetic);
+	if (oneg_writeSorted (O, argv[3]) != 0) 
 		ONEG_FAIL ();
 
 	// Finish
