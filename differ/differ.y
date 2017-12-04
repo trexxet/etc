@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "functree.h"
+#include "differentiate.h"
+#include "reduce.h"
 
 extern int yylex();
 extern int yyparse();
@@ -40,8 +42,22 @@ void yyerror (const char *msg);
 launch_EVA01: func T_EOF 
 	    { 
 	        char *str = ftree_str ($1);
-		printf ("%s\n", str);
+		printf ("Function parsed to tree: \n\t%s\n", str);
 	        free (str);
+
+		ftree_node *diffed = differentiate ($1);
+		str = ftree_str (diffed);
+		printf ("Differentiated non-reduced function: \n\t%s\n", str);
+		free (str);
+		
+		printf ("Reducing steps:\n");
+		while (reduce (&diffed)) {
+			str = ftree_str (diffed);
+			printf ("\t%s\n", str);
+			free (str);
+		}
+
+		ftree_deleteNode (diffed);
 	        ftree_deleteNode ($1);
 		exit(0);
 	    };
