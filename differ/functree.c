@@ -23,7 +23,7 @@ ftree_node* ftree_addNumber (double value) {
 }
 
 
-ftree_node* ftree_addFunction (char op, ftree_node *lchild, ftree_node *rchild) {
+ftree_node* ftree_addFunction (const char *op, ftree_node *lchild, ftree_node *rchild) {
 	ftree_node *node = newNode ();
 	node->type = FUNCTION;
 	node->op = op;
@@ -61,16 +61,12 @@ char* ftree_str (ftree_node *node) {
 			asprintf (&str, "%g", node->num);
 			return str;
 		case FUNCTION:
-			if (node->lchild)
-				strLChild = ftree_str (node->lchild);
+			strLChild = (node->lchild) ? ftree_str (node->lchild) : NULL;
+			strRChild = (node->rchild) ? ftree_str (node->rchild) : "";
+			if (strLChild)
+				asprintf (&str, "(%s)%s(%s)", strLChild, node->op, strRChild);
 			else
-				strLChild = "";
-			if (node->rchild)
-				strRChild = ftree_str (node->rchild);
-			else
-				strRChild = "";
-			assert (strLChild && strRChild);
-			asprintf (&str, "(%s)%c(%s)", strLChild, node->op, strRChild);
+				asprintf (&str, "%s(%s)", node->op, strRChild);
 			if (node->lchild && node->lchild->type != VARIABLE)
 				free (strLChild);
 			if (node->rchild && node->rchild->type != VARIABLE)
