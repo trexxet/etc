@@ -26,20 +26,24 @@ int reduce (ftree_node **pnode) {
 	if (OP("+") && node->rchild->type == NUMBER && node->rchild->num == 0) {
 		ftree_replaceNodeFunction (pnode, node->lchild); return 1;
 	}
-	// f - 0 -> f
+	/* // f - 0 -> f
 	if (OP("-") && node->rchild->type == NUMBER && node->rchild->num == 0) {
 		ftree_replaceNodeFunction (pnode, node->lchild); return 1;
 	}
 	// 0 - f -> -f
 	if (OP("-") && node->lchild->type == NUMBER && node->lchild->num == 0) {
 		ftree_replaceNodeFunction (pnode, ftree_addFunction("-", NULL, node->rchild)); return 1;
-	}
+	} */
 	// 1 * f -> f
 	if (OP("*") && node->lchild->type == NUMBER && node->lchild->num == 1) {
 		ftree_replaceNodeFunction (pnode, node->rchild); return 1;
 	}
 	// f * 1 -> f
 	if (OP("*") && node->rchild->type == NUMBER && node->rchild->num == 1) {
+		ftree_replaceNodeFunction (pnode, node->lchild); return 1;
+	}
+	// f * 1 -> f
+	if (OP("^") && node->rchild->type == NUMBER && node->rchild->num == 1) {
 		ftree_replaceNodeFunction (pnode, node->lchild); return 1;
 	}
 	// n + n -> n

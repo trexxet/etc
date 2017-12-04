@@ -101,6 +101,13 @@ void ftree_replaceNodeFunction (ftree_node **pnode, ftree_node *newNode) {
 void ftree_replaceNodeVariable (ftree_node *node) {
 	assert (node && "Trying to replace a NULL node");
 
+	if (node->lchild)
+		ftree_deleteNode (node->lchild);
+	if (node->rchild)
+		ftree_deleteNode (node->rchild);
+
+	node->lchild = node->rchild = NULL;
+	node->type = VARIABLE;
 }
 
 

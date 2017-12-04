@@ -42,8 +42,15 @@ void yyerror (const char *msg);
 launch_EVA01: func T_EOF 
 	    { 
 	        char *str = ftree_str ($1);
-		printf ("Function parsed to tree: \n\t%s\n", str);
+		printf ("Source function parsed to tree: \n\t%s\n", str);
 	        free (str);
+		
+		printf ("Reducing steps:\n");
+		while (reduce (&$1)) {
+			str = ftree_str ($1);
+			printf ("\t%s\n", str);
+			free (str);
+		}
 
 		ftree_node *diffed = differentiate ($1);
 		str = ftree_str (diffed);
