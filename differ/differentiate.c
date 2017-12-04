@@ -9,6 +9,7 @@
 #define Lchild node->lchild
 #define Rchild node->rchild
 
+
 ftree_node* differentiate (ftree_node *node) {
 	assert (node && "Trying to differentiate a NULL node");
 
@@ -134,6 +135,7 @@ ftree_node* differentiate (ftree_node *node) {
 		                                    cpfunc (Rchild),
 		                                    ftree_addNumber (2)))));
 }
+
 
 #undef OP
 #undef newfunc
