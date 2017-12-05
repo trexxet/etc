@@ -99,6 +99,11 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "Cannot open input file\n");
 		return 1;
 	}
+	printf ("Source function:\n\t");
+	int chr = 0;
+	while ((chr = getc (yyin)) != EOF)
+		putchar (chr);
+	rewind (yyin);
 	do {
 		yyparse();
 	} while (!feof(yyin));
