@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "functree.h"
 #include "differentiate.h"
 #include "reduce.h"
@@ -45,7 +46,7 @@ launch_EVA01: func T_EOF
 		printf ("Source function parsed to tree: \n\t%s\n", str);
 	        free (str);
 		
-		printf ("Reducing steps:\n");
+		printf ("Reduction steps:\n");
 		while (reduce (&$1)) {
 			str = ftree_str ($1);
 			printf ("\t%s\n", str);
@@ -57,14 +58,17 @@ launch_EVA01: func T_EOF
 		printf ("Differentiated non-reduced function: \n\t%s\n", str);
 		free (str);
 		
-		printf ("Reducing steps:\n");
+		printf ("Reduction steps:\n");
 		while (reduce (&diffed)) {
 			str = ftree_str (diffed);
 			printf ("\t%s\n", str);
 			free (str);
 		}
-
 		ftree_deleteNode (diffed);
+
+		extern int reduceCalls;
+		printf ("reduce() was called %d times\n", reduceCalls);
+
 	        ftree_deleteNode ($1);
 		exit(0);
 	    };
@@ -93,17 +97,40 @@ func: T_NUM                                      { $$ = ftree_addNumber($1); }
 %%
 
 
+void parseCmdArgs (int argc, char *argv[], char** inputFilename) {
+	extern int debugging;
+	int opt;
+	opterr = 0;
+	while ((opt = getopt (argc, argv, "d")) != -1)
+		switch (opt) {
+			case 'd':
+				debugging = 1;
+				break;
+			case '?':
+			default:
+				fprintf (stderr, "Usage: differ <input file> [-d]\n");
+				exit (1);
+		}
+	*inputFilename = argv[optind];
+}
+
+
 int main (int argc, char *argv[]) {
-	yyin = fopen (argv[1], "r");
+	char *inputFilename = NULL;
+	parseCmdArgs (argc, argv, &inputFilename);
+
+	yyin = fopen (inputFilename, "r");
 	if (!yyin) {
 		fprintf (stderr, "Cannot open input file\n");
 		return 1;
 	}
+
 	printf ("Source function:\n\t");
 	int chr = 0;
 	while ((chr = getc (yyin)) != EOF)
 		putchar (chr);
 	rewind (yyin);
+
 	do {
 		yyparse();
 	} while (!feof(yyin));
